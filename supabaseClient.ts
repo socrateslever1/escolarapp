@@ -1,15 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "https://arqcbnkucnqzyhtcosdt.supabase.co";
-const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFycWNibmt1Y25xenlodGNvc2R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyMjczMDAsImV4cCI6MjA4NTgwMzMwMH0.IfjXo5SojHX3UimG0YWujew_OzZIdhKVcRW8yLvts2o";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const HAS_SUPABASE_CONFIG = !!SUPABASE_URL && !!SUPABASE_ANON_KEY;
 
 // Flag to coordinate fallback to mock operations
-let isMockActive = true; // Default to Sandbox database sandbox for perfect and safe initialization.
+let isMockActive = !HAS_SUPABASE_CONFIG;
 let authListener: any = null;
 
-// Determine if we should start in mock mode immediately
-if (localStorage.getItem('escolar_use_mock_active') === 'false') {
+// Determine if we should start in real or mock mode explicitly.
+if (localStorage.getItem('escolar_use_mock_active') === 'false' && HAS_SUPABASE_CONFIG) {
   isMockActive = false;
+} else if (localStorage.getItem('escolar_use_mock_active') === 'true') {
+  isMockActive = true;
 }
 
 let realClientInstance: any = null;
@@ -794,7 +797,7 @@ export const supabase = {
   }
 } as any;
 
-export const estaConfigurado = !!SUPABASE_URL && !!SUPABASE_ANON_KEY;
+export const estaConfigurado = HAS_SUPABASE_CONFIG;
 export const estaMockAtivo = () => isMockActive;
 export const alternarMockMode = (ativo: boolean) => {
   localStorage.setItem('escolar_use_mock_active', ativo ? 'true' : 'false');
