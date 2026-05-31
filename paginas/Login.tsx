@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { GraduationCap, ShieldCheck, ArrowRight, Lock, User as IconeUsuario, AlertCircle, Eye, EyeOff } from 'lucide-react';
-import { supabase, estaConfigurado } from '../supabaseClient';
+import { supabase, estaConfigurado, estaMockAtivo, alternarMockMode } from '../supabaseClient';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -150,7 +150,38 @@ const Login: React.FC = () => {
             )}
           </form>
 
-          <div className="mt-10 pt-8 border-t border-slate-50 flex flex-col items-center">
+          {estaMockAtivo() && (
+            <div className="mt-6 p-4 bg-blue-50/50 rounded-2xl border border-blue-100/40 text-left text-[11px] text-blue-900">
+              <p className="font-extrabold uppercase tracking-wider text-[8px] mb-2 text-blue-700">Acesso de Teste (Sandbox Ativo)</p>
+              <div className="space-y-1.5 text-slate-700 font-medium">
+                <div>• Geral: <span className="font-bold text-blue-700 font-mono">master@escolarapp.gov.br</span> ou <span className="font-bold text-blue-700 font-mono">gestor@escolarapp.gov.br</span></div>
+                <div>• Senha: <span className="font-bold font-mono">qualquer senha</span></div>
+              </div>
+            </div>
+          )}
+
+          {/* Database Switcher */}
+          <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col items-center gap-3">
+            <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Banco de Dados</span>
+            <div className="flex bg-slate-100 p-0.5 rounded-full text-[10px] font-black">
+              <button
+                type="button"
+                onClick={() => alternarMockMode(true)}
+                className={`px-4 py-1.5 rounded-full transition-all uppercase tracking-widest ${estaMockAtivo() ? 'bg-[#2563eb] text-white shadow-md shadow-blue-500/10' : 'text-slate-500 hover:text-slate-800'}`}
+              >
+                Local Sandbox
+              </button>
+              <button
+                type="button"
+                onClick={() => alternarMockMode(false)}
+                className={`px-4 py-1.5 rounded-full transition-all uppercase tracking-widest ${!estaMockAtivo() ? 'bg-[#2563eb] text-white shadow-md shadow-blue-500/10' : 'text-slate-500 hover:text-slate-800'}`}
+              >
+                Nuvem Real
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-6 pt-6 border-t border-slate-100 flex flex-col items-center">
             <div className="flex items-center gap-2 text-emerald-500 mb-1.5">
               <ShieldCheck size={16} />
               <span className="text-[9px] font-black uppercase tracking-[0.15em]">Acesso Criptografado</span>
